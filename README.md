@@ -1,6 +1,6 @@
 # CarteTresor
 
-Projet Java développé dans le cadre d’un entretien d’embauche.
+Projet Java développé dans le cadre d’un exercice.
 
 ## Description
 
@@ -16,7 +16,7 @@ Il s’agit d’un exemple simple pour démontrer ma capacité à créer un proj
 
 1. Cloner le dépôt :
    ```
-   git clone <url-du-repo>
+   git clone https://github.com/MaximeLeviel/CarteTresor.git
    ```
 2. Se placer dans le dossier du projet :
    ```
