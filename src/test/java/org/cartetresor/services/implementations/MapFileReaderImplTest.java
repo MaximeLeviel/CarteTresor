@@ -1,8 +1,11 @@
 package org.cartetresor.services.implementations;
 
+import org.cartetresor.models.LineData;
 import org.cartetresor.models.MapCell;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -21,43 +24,20 @@ class MapFileReaderImplTest {
         test = Mockito.spy(new MapFileReaderImpl());
     }
 
-    @Test
-    void readRow_mapLine() {
+    @ParameterizedTest
+    @CsvSource({"#, 0, 0, 0", "C, 1, 0, 0", "M, 0, 1, 0", "T, 0, 0, 1"})
+    void readRow_mapLine(String line, int verifyMapRowCalls, int verifyMountainRowCalls, int verifyTreasureRowCalls) {
         final var treasureMap = new ArrayList<List<MapCell>>();
-        final var line = "C - 3 - 4";
-
-        doNothing().when(test).readMountainRow(any(), any());
-
-        test.readRow(treasureMap, line);
-
-        verify(test).readMapRow(treasureMap, line);
-        verify(test, never()).readMountainRow(any(), any());
-    }
-
-    @Test
-    void readRow_mountainLine() {
-        final var treasureMap = new ArrayList<List<MapCell>>();
-        final var line = "M - 3 - 4";
-
-        doNothing().when(test).readMountainRow(any(), any());
-
-        test.readRow(treasureMap, line);
-
-        verify(test, never()).readMapRow(any(), any());
-        verify(test).readMountainRow(treasureMap, line);
-    }
-
-    @Test
-    void readRow_commentLine() {
-        final var treasureMap = new ArrayList<List<MapCell>>();
-        final var line = "# A - 3 - 4";
 
         doNothing().when(test).readMapRow(any(), any());
+        doNothing().when(test).readMountainRow(any(), any());
+        doNothing().when(test).readTreasureRow(any(), any());
 
         test.readRow(treasureMap, line);
 
-        verify(test, never()).readMapRow(any(), any());
-        verify(test, never()).readMountainRow(any(), any());
+        verify(test, times(verifyMapRowCalls)).readMapRow(treasureMap, line);
+        verify(test, times(verifyMountainRowCalls)).readMountainRow(any(), any());
+        verify(test, times(verifyTreasureRowCalls)).readTreasureRow(any(), any());
     }
 
     @Test
@@ -78,7 +58,7 @@ class MapFileReaderImplTest {
         final var treasureMap = new ArrayList<List<MapCell>>();
         final var line = "C - 1 - 2";
 
-        doNothing().when(test).checkLineFormat(any(), any());
+        doNothing().when(test).checkLineFormat(any(), any(), anyInt());
 
         test.readMapRow(treasureMap, line);
 
@@ -87,14 +67,46 @@ class MapFileReaderImplTest {
     }
 
     @Test
+    void getSafeLineData() {
+        final var lineData = new LineData(0, 0, 0);
+        final var treasureMap = new ArrayList<List<MapCell>>();
+        final var line = "T - 0 - 0";
+
+        doNothing().when(test).checkLineFormat(any(), any(), anyInt());
+        doNothing().when(test).checkCoordinates(anyInt(), anyInt(), any());
+
+        final var result = test.getSafeLineData(treasureMap, line, 3);
+
+        assertEquals(lineData, result);
+        verify(test).checkLineFormat(any(), eq(line), eq(3));
+        verify(test).checkCoordinates(0, 0, treasureMap);
+    }
+
+    @Test
+    void getSafeLineData_fourthValue() {
+        final var lineData = new LineData(0, 0, 1);
+        final var treasureMap = new ArrayList<List<MapCell>>();
+        final var line = "T - 0 - 0 - 1";
+
+        doNothing().when(test).checkLineFormat(any(), any(), anyInt());
+        doNothing().when(test).checkCoordinates(anyInt(), anyInt(), any());
+
+        final var result = test.getSafeLineData(treasureMap, line, 3);
+
+        assertEquals(lineData, result);
+        verify(test).checkLineFormat(any(), eq(line), eq(3));
+        verify(test).checkCoordinates(0, 0, treasureMap);
+    }
+
+    @Test
     void readMountainRow() {
+        final var lineData = new LineData(0, 0, 0);
         final var mapCell = new MapCell();
         final var mapRow = List.of(mapCell);
         final var treasureMap = List.of(mapRow);
         final var line = "M - 0 - 0";
 
-        doNothing().when(test).checkLineFormat(any(), any());
-        doNothing().when(test).checkCoordinates(anyInt(), anyInt(), any());
+        doReturn(lineData).when(test).getSafeLineData(any(), any(), anyInt());
 
         test.readMountainRow(treasureMap, line);
 
@@ -102,12 +114,27 @@ class MapFileReaderImplTest {
     }
 
     @Test
+    void readTreasureRow() {
+        final var lineData = new LineData(0, 0, 1);
+        final var mapCell = new MapCell();
+        final var mapRow = List.of(mapCell);
+        final var treasureMap = List.of(mapRow);
+        final var line = "T - 0 - 0 - 1";
+
+        doReturn(lineData).when(test).getSafeLineData(any(), any(), anyInt());
+
+        test.readTreasureRow(treasureMap, line);
+
+        assertEquals(1, mapCell.getTreasuresCount());
+    }
+
+    @Test
     void checkLineFormat_success() {
-        assertDoesNotThrow(() -> test.checkLineFormat(new String[]{"C", "3", "4"}, "C - 3 - 4"));
+        assertDoesNotThrow(() -> test.checkLineFormat(new String[]{"C", "3", "4"}, "C - 3 - 4", 3));
     }
 
     @Test
     void checkLineFormat_error() {
-        assertThrows(IllegalArgumentException.class, () -> test.checkLineFormat(new String[]{"C", "3"}, "C - 3"));
+        assertThrows(IllegalArgumentException.class, () -> test.checkLineFormat(new String[]{"C", "3"}, "C - 3", 3));
     }
 }
