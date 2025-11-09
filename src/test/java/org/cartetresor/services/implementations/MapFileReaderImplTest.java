@@ -132,18 +132,6 @@ class MapFileReaderImplTest {
         assertEquals(1, mapCell.getTreasuresCount());
     }
 
-    @ParameterizedTest
-    @CsvSource({"N,NORTH", "S,SOUTH", "E,EAST", "W,WEST"})
-    void parseDirection(String input, ExplorerDirection expected) {
-        final var result = test.parseDirection(input);
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void parseDirection_invalid() {
-        assertThrows(IllegalArgumentException.class, () -> test.parseDirection("X"));
-    }
-
     @Test
     void readExplorerRow() {
         final var gameData = new GameData();
@@ -158,8 +146,8 @@ class MapFileReaderImplTest {
         final var explorer = gameData.getExplorers().getFirst();
         assertEquals("Lara", explorer.getName());
         assertEquals(ExplorerDirection.NORTH, explorer.getDirection());
-        assertEquals(0, explorer.getX());
-        assertEquals(0, explorer.getY());
+        assertEquals(0, explorer.getCoordX());
+        assertEquals(0, explorer.getCoordY());
         assertEquals(List.of("A", "A", "D", "A", "D", "A", "G", "G", "A"), explorer.getActionSequence());
     }
 

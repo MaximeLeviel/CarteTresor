@@ -11,7 +11,7 @@ public class Main {
 
             try {
                 final var fileWriter = new MapFileWriterImpl();
-                fileWriter.generateMapFile(gameData.getTreasureMap());
+                fileWriter.generateMapFile(gameData);
             } catch (RuntimeException e) {
                 System.err.println("An error occurred while writing the map file: " + e.getMessage());
             }

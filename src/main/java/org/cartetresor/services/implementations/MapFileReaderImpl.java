@@ -83,16 +83,6 @@ public class MapFileReaderImpl implements MapFileReader {
         mapCell.setTreasuresCount(lineData.getNbOfTreasures());
     }
 
-    ExplorerDirection parseDirection(String directionStr) throws IllegalArgumentException {
-        return switch (directionStr) {
-            case "N" -> ExplorerDirection.NORTH;
-            case "S" -> ExplorerDirection.SOUTH;
-            case "E" -> ExplorerDirection.EAST;
-            case "W" -> ExplorerDirection.WEST;
-            default -> throw new IllegalArgumentException("Invalid direction: " + directionStr);
-        };
-    }
-
     void readExplorerRow(GameData gameData, String line) throws IllegalArgumentException {
         final var values = line.split(" - ");
         checkLineFormat(values, line, 6);
@@ -101,7 +91,7 @@ public class MapFileReaderImpl implements MapFileReader {
         checkCoordinates(coordX, coordY, gameData.getTreasureMap());
         final var name = values[1].strip();
         final var direction = values[4].strip();
-        final var formattedDirection = parseDirection(direction);
+        final var formattedDirection = ExplorerDirection.valueOfLabel(direction);
         final var actionSequence = Arrays.asList(values[5].strip().split(""));
         final var newExplorer = new Explorer(name, formattedDirection, coordX, coordY, actionSequence);
         gameData.getExplorers().add(newExplorer);

@@ -1,5 +1,8 @@
 package org.cartetresor.services.implementations;
 
+import org.cartetresor.models.Explorer;
+import org.cartetresor.models.ExplorerDirection;
+import org.cartetresor.models.GameData;
 import org.cartetresor.models.MapCell;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,22 +31,25 @@ class MapFileWriterImplTest {
 
     @Test
     void generateMapFile() {
-        final var treasureMap = new ArrayList<List<MapCell>>();
+        final var gameData = new GameData();
         final var mapLine = "mapLine";
         final var mountainLines = List.of("mountainLine");
         final var treasureLines = List.of("treasureLine");
-        final var lines = List.of("mapLine", "mountainLine", "treasureLine");
+        final var explorerLines = List.of("explorerLine");
+        final var lines = List.of("mapLine", "mountainLine", "treasureLine", "explorerLine");
 
         doReturn(mapLine).when(test).generateMapLine(any());
         doReturn(mountainLines).when(test).generateMountainLines(any());
         doReturn(treasureLines).when(test).generateTreasureLines(any());
+        doReturn(explorerLines).when(test).generateExplorersLines(any());
         doNothing().when(test).displayLines(any());
         doNothing().when(test).writeMap(any());
 
-        test.generateMapFile(treasureMap);
+        test.generateMapFile(gameData);
 
-        verify(test).generateMapFile(treasureMap);
-        verify(test).generateMountainLines(treasureMap);
+        verify(test).generateMapLine(gameData.getTreasureMap());
+        verify(test).generateMountainLines(gameData.getTreasureMap());
+        verify(test).generateExplorersLines(gameData.getExplorers());
         verify(test).displayLines(lines);
         verify(test).writeMap(lines);
     }
@@ -109,8 +115,8 @@ class MapFileWriterImplTest {
         final var result = test.generateMountainLines(treasureMap);
 
         assertEquals(2, result.size());
-        assertTrue(result.contains("M - 1 - 0"));
-        assertTrue(result.contains("M - 0 - 1"));
+        assertEquals("M - 1 - 0", result.get(0));
+        assertEquals("M - 0 - 1", result.get(1));
     }
 
     @Test
@@ -128,7 +134,34 @@ class MapFileWriterImplTest {
         final var result = test.generateTreasureLines(treasureMap);
 
         assertEquals(3, result.size());
-        assertTrue(result.contains("T - 1 - 0 - 1"));
-        assertTrue(result.contains("T - 0 - 1 - 2"));
+        assertEquals("T - 1 - 0 - 1", result.get(1));
+        assertEquals("T - 0 - 1 - 2", result.get(2));
+    }
+
+    @Test
+    void generateTreasureLines_empty() {
+        final var result = test.generateTreasureLines(List.of());
+
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void generateExplorersLines() {
+        final var explorer1 = new Explorer("Lara", ExplorerDirection.SOUTH, 0, 0, new ArrayList<>());
+        final var explorer2 = new Explorer("Indiana", ExplorerDirection.EAST, 1, 1, new ArrayList<>());
+        final var explorers = List.of(explorer1, explorer2);
+
+        final var result = test.generateExplorersLines(explorers);
+
+        assertEquals(3, result.size());
+        assertEquals("A - Lara - 0 - 0 - S - 0", result.get(1));
+        assertEquals("A - Indiana - 1 - 1 - E - 0", result.get(2));
+    }
+
+    @Test
+    void generateExplorersLines_empty() {
+        final var result = test.generateExplorersLines(List.of());
+
+        assertEquals(1, result.size());
     }
 }

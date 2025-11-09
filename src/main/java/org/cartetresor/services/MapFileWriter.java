@@ -1,9 +1,7 @@
 package org.cartetresor.services;
 
-import org.cartetresor.models.MapCell;
-
-import java.util.List;
+import org.cartetresor.models.GameData;
 
 public interface MapFileWriter {
-    void generateMapFile(List<List<MapCell>> treasureMap);
+    void generateMapFile(GameData gameData);
 }
