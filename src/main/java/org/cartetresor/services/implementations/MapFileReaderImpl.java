@@ -34,11 +34,13 @@ public class MapFileReaderImpl implements MapFileReader {
     }
 
     void readRow(List<List<MapCell>> treasureMap, String line) throws IllegalArgumentException {
-        if (line.startsWith("C")) {
-            readMapRow(treasureMap, line);
-        }
-        if (line.startsWith("M")) {
-            readMountainRow(treasureMap, line);
+        switch (line) {
+            case String s when s.startsWith("#") -> {
+                //Comment line, do nothing
+            }
+            case String s when s.startsWith("C") -> readMapRow(treasureMap, line);
+            case String s when s.startsWith("M") -> readMountainRow(treasureMap, line);
+            default -> throw new IllegalArgumentException("Unknown line type: " + line);
         }
     }
 

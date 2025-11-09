@@ -48,15 +48,29 @@ class MapFileReaderImplTest {
     }
 
     @Test
-    void readRow_nonMapLine() {
+    void readRow_commentLine() {
         final var treasureMap = new ArrayList<List<MapCell>>();
-        final var line = "A - 3 - 4";
+        final var line = "# A - 3 - 4";
 
         doNothing().when(test).readMapRow(any(), any());
 
         test.readRow(treasureMap, line);
 
         verify(test, never()).readMapRow(any(), any());
+        verify(test, never()).readMountainRow(any(), any());
+    }
+
+    @Test
+    void readRow_invalidLine() {
+        final var treasureMap = new ArrayList<List<MapCell>>();
+        final var line = "A - 3 - 4";
+
+        doNothing().when(test).readMapRow(any(), any());
+
+        assertThrows(IllegalArgumentException.class, () -> test.readRow(treasureMap, line));
+
+        verify(test, never()).readMapRow(any(), any());
+        verify(test, never()).readMountainRow(any(), any());
     }
 
     @Test
