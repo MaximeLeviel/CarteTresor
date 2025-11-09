@@ -1,12 +1,14 @@
 package org.cartetresor;
 
 import org.cartetresor.services.implementations.MapFileReaderImpl;
+import org.cartetresor.services.implementations.MapFileWriterImpl;
 
 public class Main {
     public static void main(String[] args) {
         final var fileReader = new MapFileReaderImpl();
-        final var result = fileReader.getMap();
+        final var treasureMap = fileReader.getMap();
 
-        System.out.println("Map size: " + result.size() + " x " + (result.isEmpty() ? 0 : result.getFirst().size()));
+        final var fileWriter = new MapFileWriterImpl();
+        fileWriter.generateMapFile(treasureMap);
     }
 }
