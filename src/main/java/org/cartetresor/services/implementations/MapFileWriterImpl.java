@@ -16,7 +16,8 @@ public class MapFileWriterImpl implements MapFileWriter {
     public void generateMapFile(List<List<MapCell>> treasureMap) throws RuntimeException {
         final var lines = new ArrayList<String>();
         lines.add(generateMapLine(treasureMap));
-        lines.addAll(generateMountainLine(treasureMap));
+        lines.addAll(generateMountainLines(treasureMap));
+        lines.addAll(generateTreasureLines(treasureMap));
         displayLines(lines);
         writeMap(lines);
     }
@@ -40,7 +41,7 @@ public class MapFileWriterImpl implements MapFileWriter {
         return "C - " + treasureMap.size() + " - " + treasureMap.getFirst().size();
     }
 
-    List<String> generateMountainLine(List<List<MapCell>> treasureMap) {
+    List<String> generateMountainLines(List<List<MapCell>> treasureMap) {
         final var mountainLines = new ArrayList<String>();
         for (int y = 0; y < treasureMap.size(); y++) {
             for (int x = 0; x < treasureMap.get(y).size(); x++) {
@@ -51,5 +52,19 @@ public class MapFileWriterImpl implements MapFileWriter {
             }
         }
         return mountainLines;
+    }
+
+    List<String> generateTreasureLines(List<List<MapCell>> treasureMap) {
+        final var treasureLines = new ArrayList<String>();
+        treasureLines.add("# {T comme Trésor} - {Axe horizontal} - {Axe vertical} - {Nb. de trésors restants}");
+        for (int y = 0; y < treasureMap.size(); y++) {
+            for (int x = 0; x < treasureMap.get(y).size(); x++) {
+                final var cell = treasureMap.get(y).get(x);
+                if (cell.getTreasuresCount() > 0) {
+                    treasureLines.add("T - " + x + " - " + y + " - " + cell.getTreasuresCount());
+                }
+            }
+        }
+        return treasureLines;
     }
 }

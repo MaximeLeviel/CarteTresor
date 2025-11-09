@@ -30,18 +30,20 @@ class MapFileWriterImplTest {
     void generateMapFile() {
         final var treasureMap = new ArrayList<List<MapCell>>();
         final var mapLine = "mapLine";
-        final var mountainLines = List.of("mountainLine1", "mountainLine2");
-        final var lines = List.of("mapLine", "mountainLine1", "mountainLine2");
+        final var mountainLines = List.of("mountainLine");
+        final var treasureLines = List.of("treasureLine");
+        final var lines = List.of("mapLine", "mountainLine", "treasureLine");
 
         doReturn(mapLine).when(test).generateMapLine(any());
-        doReturn(mountainLines).when(test).generateMountainLine(any());
+        doReturn(mountainLines).when(test).generateMountainLines(any());
+        doReturn(treasureLines).when(test).generateTreasureLines(any());
         doNothing().when(test).displayLines(any());
         doNothing().when(test).writeMap(any());
 
         test.generateMapFile(treasureMap);
 
         verify(test).generateMapFile(treasureMap);
-        verify(test).generateMountainLine(treasureMap);
+        verify(test).generateMountainLines(treasureMap);
         verify(test).displayLines(lines);
         verify(test).writeMap(lines);
     }
@@ -93,7 +95,7 @@ class MapFileWriterImplTest {
     }
 
     @Test
-    void generateMountainLine() {
+    void generateMountainLines() {
         final var cell1 = new MapCell();
         final var cell2 = new MapCell();
         cell2.setMountain(true);
@@ -104,10 +106,29 @@ class MapFileWriterImplTest {
         final var row2 = List.of(cell3, cell4);
         final var treasureMap = List.of(row1, row2);
 
-        final var result = test.generateMountainLine(treasureMap);
+        final var result = test.generateMountainLines(treasureMap);
 
         assertEquals(2, result.size());
         assertTrue(result.contains("M - 1 - 0"));
         assertTrue(result.contains("M - 0 - 1"));
+    }
+
+    @Test
+    void generateTreasureLines() {
+        final var cell1 = new MapCell();
+        final var cell2 = new MapCell();
+        cell2.setTreasuresCount(1);
+        final var cell3 = new MapCell();
+        cell3.setTreasuresCount(2);
+        final var cell4 = new MapCell();
+        final var row1 = List.of(cell1, cell2);
+        final var row2 = List.of(cell3, cell4);
+        final var treasureMap = List.of(row1, row2);
+
+        final var result = test.generateTreasureLines(treasureMap);
+
+        assertEquals(3, result.size());
+        assertTrue(result.contains("T - 1 - 0 - 1"));
+        assertTrue(result.contains("T - 0 - 1 - 2"));
     }
 }
