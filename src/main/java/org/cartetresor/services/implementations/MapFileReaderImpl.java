@@ -1,0 +1,59 @@
+package org.cartetresor.services.implementations;
+
+import org.cartetresor.models.MapCell;
+import org.cartetresor.services.MapFileReader;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class MapFileReaderImpl implements MapFileReader {
+
+    @Override
+    public List<List<MapCell>> getMap() throws RuntimeException {
+        try (BufferedReader mapFile = new BufferedReader(new FileReader("src/main/resources/mapFile.txt"))) {
+            return readFile(mapFile);
+        } catch (IOException | RuntimeException e) {
+            throw new RuntimeException("File was not found", e);
+        }
+    }
+
+    public List<List<MapCell>> readFile(BufferedReader mapFile) throws RuntimeException {
+        final var treasureMap = new ArrayList<List<MapCell>>();
+        try {
+            var line = mapFile.readLine();
+            while (line != null) {
+                readRow(treasureMap, line);
+                line = mapFile.readLine();
+            }
+
+            return treasureMap;
+        } catch (IOException | IllegalArgumentException e) {
+            throw new RuntimeException("Error while reading file", e);
+        }
+    }
+
+    void readRow(List<List<MapCell>> treasureMap, String line) throws IllegalArgumentException {
+        if (line.startsWith("C")) {
+            readMapRow(treasureMap, line);
+        }
+    }
+
+    void readMapRow(List<List<MapCell>> treasureMap, String line) throws IllegalArgumentException {
+        final var values = line.split(" - ");
+        checkLineFormat(values, line);
+        for (var i = 0; i < Integer.parseInt(values[1].strip()); i++) {
+            final var row = new ArrayList<MapCell>();
+            for (var j = 0; j < Integer.parseInt(values[2].strip()); j++) {
+                row.add(new MapCell());
+            }
+            treasureMap.add(row);
+        }
+    }
+
+    void checkLineFormat(String[] values, String line) throws IllegalArgumentException {
+        if (values.length != 3) {
+            throw new IllegalArgumentException("Map line is not valid: " + line);
+        }
+    }
+}
