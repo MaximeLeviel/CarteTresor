@@ -2,7 +2,7 @@ package org.cartetresor.services.implementations;
 
 import org.cartetresor.models.Explorer;
 import org.cartetresor.models.ExplorerDirection;
-import org.cartetresor.models.GameData;
+import org.cartetresor.models.SimulationData;
 import org.cartetresor.models.MapCell;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class MapFileWriterImplTest {
 
     @Test
     void generateMapFile() {
-        final var gameData = new GameData();
+        final var simulationData = new SimulationData();
         final var mapLine = "mapLine";
         final var mountainLines = List.of("mountainLine");
         final var treasureLines = List.of("treasureLine");
@@ -45,11 +45,11 @@ class MapFileWriterImplTest {
         doNothing().when(test).displayLines(any());
         doNothing().when(test).writeMap(any());
 
-        test.generateMapFile(gameData);
+        test.generateMapFile(simulationData);
 
-        verify(test).generateMapLine(gameData.getTreasureMap());
-        verify(test).generateMountainLines(gameData.getTreasureMap());
-        verify(test).generateExplorersLines(gameData.getExplorers());
+        verify(test).generateMapLine(simulationData.getTreasureMap());
+        verify(test).generateMountainLines(simulationData.getTreasureMap());
+        verify(test).generateExplorersLines(simulationData.getExplorers());
         verify(test).displayLines(lines);
         verify(test).writeMap(lines);
     }

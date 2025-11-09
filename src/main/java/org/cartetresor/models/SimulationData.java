@@ -3,7 +3,7 @@ package org.cartetresor.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameData {
+public class SimulationData {
     private final List<List<MapCell>> treasureMap = new ArrayList<>();
     private final List<Explorer> explorers = new ArrayList<>();
 

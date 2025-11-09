@@ -1,7 +1,7 @@
 package org.cartetresor.services;
 
-import org.cartetresor.models.GameData;
+import org.cartetresor.models.SimulationData;
 
 public interface MapFileWriter {
-    void generateMapFile(GameData gameData);
+    void generateMapFile(SimulationData simulationData);
 }

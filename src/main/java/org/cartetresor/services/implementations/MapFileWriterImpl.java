@@ -1,7 +1,7 @@
 package org.cartetresor.services.implementations;
 
 import org.cartetresor.models.Explorer;
-import org.cartetresor.models.GameData;
+import org.cartetresor.models.SimulationData;
 import org.cartetresor.models.MapCell;
 import org.cartetresor.services.MapFileWriter;
 
@@ -15,12 +15,12 @@ import java.util.List;
 public class MapFileWriterImpl implements MapFileWriter {
 
     @Override
-    public void generateMapFile(GameData gameData) throws RuntimeException {
+    public void generateMapFile(SimulationData simulationData) throws RuntimeException {
         final var lines = new ArrayList<String>();
-        lines.add(generateMapLine(gameData.getTreasureMap()));
-        lines.addAll(generateMountainLines(gameData.getTreasureMap()));
-        lines.addAll(generateTreasureLines(gameData.getTreasureMap()));
-        lines.addAll(generateExplorersLines(gameData.getExplorers()));
+        lines.add(generateMapLine(simulationData.getTreasureMap()));
+        lines.addAll(generateMountainLines(simulationData.getTreasureMap()));
+        lines.addAll(generateTreasureLines(simulationData.getTreasureMap()));
+        lines.addAll(generateExplorersLines(simulationData.getExplorers()));
         displayLines(lines);
         writeMap(lines);
     }

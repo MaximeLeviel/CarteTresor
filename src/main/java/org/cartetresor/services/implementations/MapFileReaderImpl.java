@@ -11,7 +11,7 @@ import java.util.List;
 public class MapFileReaderImpl implements MapFileReader {
 
     @Override
-    public GameData getMap() throws RuntimeException {
+    public SimulationData getMap() throws RuntimeException {
         try (BufferedReader mapFile = new BufferedReader(new FileReader("src/main/resources/mapFile.txt"))) {
             return readFile(mapFile);
         } catch (IOException e) {
@@ -19,16 +19,16 @@ public class MapFileReaderImpl implements MapFileReader {
         }
     }
 
-    public GameData readFile(BufferedReader mapFile) throws RuntimeException {
-        final var gameData = new GameData();
+    public SimulationData readFile(BufferedReader mapFile) throws RuntimeException {
+        final var simulationData = new SimulationData();
         try {
             var line = mapFile.readLine();
             while (line != null) {
-                readRow(gameData, line);
+                readRow(simulationData, line);
                 line = mapFile.readLine();
             }
 
-            return gameData;
+            return simulationData;
         } catch (IOException e) {
             throw new RuntimeException("Error while reading file: " + e.getMessage(), e);
         } catch (IllegalArgumentException e){
@@ -36,15 +36,15 @@ public class MapFileReaderImpl implements MapFileReader {
         }
     }
 
-    void readRow(GameData gameData, String line) throws IllegalArgumentException {
+    void readRow(SimulationData simulationData, String line) throws IllegalArgumentException {
         switch (line) {
             case String s when s.startsWith("#") -> {
                 //Comment line, do nothing
             }
-            case String s when s.startsWith("C") -> readMapRow(gameData.getTreasureMap(), line);
-            case String s when s.startsWith("M") -> readMountainRow(gameData.getTreasureMap(), line);
-            case String s when s.startsWith("T") -> readTreasureRow(gameData.getTreasureMap(), line);
-            case String s when s.startsWith("A") -> readExplorerRow(gameData, line);
+            case String s when s.startsWith("C") -> readMapRow(simulationData.getTreasureMap(), line);
+            case String s when s.startsWith("M") -> readMountainRow(simulationData.getTreasureMap(), line);
+            case String s when s.startsWith("T") -> readTreasureRow(simulationData.getTreasureMap(), line);
+            case String s when s.startsWith("A") -> readExplorerRow(simulationData, line);
             default -> throw new IllegalArgumentException("Unknown line type: " + line);
         }
     }
@@ -83,18 +83,21 @@ public class MapFileReaderImpl implements MapFileReader {
         mapCell.setTreasuresCount(lineData.getNbOfTreasures());
     }
 
-    void readExplorerRow(GameData gameData, String line) throws IllegalArgumentException {
+    void readExplorerRow(SimulationData simulationData, String line) throws IllegalArgumentException {
         final var values = line.split(" - ");
         checkLineFormat(values, line, 6);
         final var coordX = Integer.parseInt(values[2].strip());
         final var coordY = Integer.parseInt(values[3].strip());
-        checkCoordinates(coordX, coordY, gameData.getTreasureMap());
+        checkCoordinates(coordX, coordY, simulationData.getTreasureMap());
         final var name = values[1].strip();
         final var direction = values[4].strip();
         final var formattedDirection = ExplorerDirection.valueOfLabel(direction);
+        if (formattedDirection == null) {
+            throw new IllegalArgumentException("Invalid explorer direction: " + direction);
+        }
         final var actionSequence = Arrays.asList(values[5].strip().split(""));
         final var newExplorer = new Explorer(name, formattedDirection, coordX, coordY, actionSequence);
-        gameData.getExplorers().add(newExplorer);
+        simulationData.getExplorers().add(newExplorer);
     }
 
     void checkLineFormat(String[] values, String line, int expectedSize) throws IllegalArgumentException {

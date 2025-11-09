@@ -7,11 +7,11 @@ public class Main {
     public static void main(String[] args) {
         try {
             final var fileReader = new MapFileReaderImpl();
-            final var gameData = fileReader.getMap();
+            final var simulationData = fileReader.getMap();
 
             try {
                 final var fileWriter = new MapFileWriterImpl();
-                fileWriter.generateMapFile(gameData);
+                fileWriter.generateMapFile(simulationData);
             } catch (RuntimeException e) {
                 System.err.println("An error occurred while writing the map file: " + e.getMessage());
             }

@@ -1,7 +1,7 @@
 package org.cartetresor.services.implementations;
 
 import org.cartetresor.models.ExplorerDirection;
-import org.cartetresor.models.GameData;
+import org.cartetresor.models.SimulationData;
 import org.cartetresor.models.LineData;
 import org.cartetresor.models.MapCell;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,14 +29,14 @@ class MapFileReaderImplTest {
     @ParameterizedTest
     @CsvSource({"#, 0, 0, 0, 0", "C, 1, 0, 0, 0", "M, 0, 1, 0, 0", "T, 0, 0, 1, 0", "A, 0, 0, 0, 1"})
     void readRow_mapLine(String line, int verifyMapRowCalls, int verifyMountainRowCalls, int verifyTreasureRowCalls, int verifyExplorerRowCalls) {
-        final var gameData = new GameData();
+        final var simulationData = new SimulationData();
 
         doNothing().when(test).readMapRow(any(), any());
         doNothing().when(test).readMountainRow(any(), any());
         doNothing().when(test).readTreasureRow(any(), any());
         doNothing().when(test).readExplorerRow(any(), any());
 
-        test.readRow(gameData, line);
+        test.readRow(simulationData, line);
 
         verify(test, times(verifyMapRowCalls)).readMapRow(any(), any());
         verify(test, times(verifyMountainRowCalls)).readMountainRow(any(), any());
@@ -46,12 +46,12 @@ class MapFileReaderImplTest {
 
     @Test
     void readRow_invalidLine() {
-        final var gameData = new GameData();
+        final var simulationData = new SimulationData();
         final var line = "A - 3 - 4";
 
         doNothing().when(test).readMapRow(any(), any());
 
-        assertThrows(IllegalArgumentException.class, () -> test.readRow(gameData, line));
+        assertThrows(IllegalArgumentException.class, () -> test.readRow(simulationData, line));
 
         verify(test, never()).readMapRow(any(), any());
         verify(test, never()).readMountainRow(any(), any());
@@ -134,16 +134,16 @@ class MapFileReaderImplTest {
 
     @Test
     void readExplorerRow() {
-        final var gameData = new GameData();
+        final var simulationData = new SimulationData();
         final var line = "A - Lara - 0 - 0 - N - AADADAGGA";
 
         doNothing().when(test).checkLineFormat(any(), any(), anyInt());
         doNothing().when(test).checkCoordinates(anyInt(), anyInt(), any());
 
-        test.readExplorerRow(gameData, line);
+        test.readExplorerRow(simulationData, line);
 
-        assertEquals(1, gameData.getExplorers().size());
-        final var explorer = gameData.getExplorers().getFirst();
+        assertEquals(1, simulationData.getExplorers().size());
+        final var explorer = simulationData.getExplorers().getFirst();
         assertEquals("Lara", explorer.getName());
         assertEquals(ExplorerDirection.NORTH, explorer.getDirection());
         assertEquals(0, explorer.getCoordX());

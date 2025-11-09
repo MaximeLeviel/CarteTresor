@@ -1,7 +1,7 @@
 package org.cartetresor.services;
 
-import org.cartetresor.models.GameData;
+import org.cartetresor.models.SimulationData;
 
 public interface MapFileReader {
-    GameData getMap() throws RuntimeException;
+    SimulationData getMap() throws RuntimeException;
 }
