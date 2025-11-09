@@ -37,6 +37,9 @@ public class MapFileReaderImpl implements MapFileReader {
         if (line.startsWith("C")) {
             readMapRow(treasureMap, line);
         }
+        if (line.startsWith("M")) {
+            readMountainRow(treasureMap, line);
+        }
     }
 
     void readMapRow(List<List<MapCell>> treasureMap, String line) throws IllegalArgumentException {
@@ -51,9 +54,25 @@ public class MapFileReaderImpl implements MapFileReader {
         }
     }
 
+    void readMountainRow(List<List<MapCell>> treasureMap, String line) throws IllegalArgumentException {
+        final var values = line.split(" - ");
+        checkLineFormat(values, line);
+        final var coordX = Integer.parseInt(values[1].strip());
+        final var coordY = Integer.parseInt(values[2].strip());
+        checkCoordinates(coordX, coordY, treasureMap);
+        final var mapCell = treasureMap.get(coordY).get(coordX);
+        mapCell.setMountain(true);
+    }
+
     void checkLineFormat(String[] values, String line) throws IllegalArgumentException {
         if (values.length != 3) {
             throw new IllegalArgumentException("Map line is not valid: " + line);
+        }
+    }
+
+    void checkCoordinates(int x, int y, List<List<MapCell>> treasureMap) throws IllegalArgumentException {
+        if (y < 0 || y >= treasureMap.size() || x < 0 || x >= treasureMap.getFirst().size()) {
+            throw new IllegalArgumentException("Coordinates are out of map bounds: (" + x + ", " + y + ")");
         }
     }
 }

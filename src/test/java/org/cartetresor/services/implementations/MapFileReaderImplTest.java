@@ -26,11 +26,25 @@ class MapFileReaderImplTest {
         final var treasureMap = new ArrayList<List<MapCell>>();
         final var line = "C - 3 - 4";
 
-        doNothing().when(test).readMapRow(any(), any());
+        doNothing().when(test).readMountainRow(any(), any());
 
         test.readRow(treasureMap, line);
 
         verify(test).readMapRow(treasureMap, line);
+        verify(test, never()).readMountainRow(any(), any());
+    }
+
+    @Test
+    void readRow_mountainLine() {
+        final var treasureMap = new ArrayList<List<MapCell>>();
+        final var line = "M - 3 - 4";
+
+        doNothing().when(test).readMountainRow(any(), any());
+
+        test.readRow(treasureMap, line);
+
+        verify(test, never()).readMapRow(any(), any());
+        verify(test).readMountainRow(treasureMap, line);
     }
 
     @Test
@@ -56,6 +70,21 @@ class MapFileReaderImplTest {
 
         assertEquals(1, treasureMap.size());
         assertEquals(2, treasureMap.getFirst().size());
+    }
+
+    @Test
+    void readMountainRow() {
+        final var mapCell = new MapCell();
+        final var mapRow = List.of(mapCell);
+        final var treasureMap = List.of(mapRow);
+        final var line = "M - 0 - 0";
+
+        doNothing().when(test).checkLineFormat(any(), any());
+        doNothing().when(test).checkCoordinates(anyInt(), anyInt(), any());
+
+        test.readMountainRow(treasureMap, line);
+
+        assertTrue(mapCell.isMountain());
     }
 
     @Test
