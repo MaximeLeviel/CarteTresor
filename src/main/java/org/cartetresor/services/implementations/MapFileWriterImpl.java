@@ -16,7 +16,15 @@ public class MapFileWriterImpl implements MapFileWriter {
     public void generateMapFile(List<List<MapCell>> treasureMap) throws RuntimeException {
         final var lines = new ArrayList<String>();
         lines.add(generateMapLine(treasureMap));
+        lines.addAll(generateMountainLine(treasureMap));
+        displayLines(lines);
         writeMap(lines);
+    }
+
+    void displayLines(List<String> lines) {
+        for (var line : lines) {
+            System.out.println(line);
+        }
     }
 
     void writeMap(List<String> lines) throws RuntimeException {
@@ -30,5 +38,18 @@ public class MapFileWriterImpl implements MapFileWriter {
 
     String generateMapLine(List<List<MapCell>> treasureMap) {
         return "C - " + treasureMap.size() + " - " + treasureMap.getFirst().size();
+    }
+
+    List<String> generateMountainLine(List<List<MapCell>> treasureMap) {
+        final var mountainLines = new ArrayList<String>();
+        for (int y = 0; y < treasureMap.size(); y++) {
+            for (int x = 0; x < treasureMap.get(y).size(); x++) {
+                final var cell = treasureMap.get(y).get(x);
+                if (cell.isMountain()) {
+                    mountainLines.add("M - " + x + " - " + y);
+                }
+            }
+        }
+        return mountainLines;
     }
 }

@@ -30,14 +30,20 @@ class MapFileWriterImplTest {
     void generateMapFile() {
         final var treasureMap = new ArrayList<List<MapCell>>();
         final var mapLine = "mapLine";
+        final var mountainLines = List.of("mountainLine1", "mountainLine2");
+        final var lines = List.of("mapLine", "mountainLine1", "mountainLine2");
 
         doReturn(mapLine).when(test).generateMapLine(any());
+        doReturn(mountainLines).when(test).generateMountainLine(any());
+        doNothing().when(test).displayLines(any());
         doNothing().when(test).writeMap(any());
 
         test.generateMapFile(treasureMap);
 
         verify(test).generateMapFile(treasureMap);
-        verify(test).writeMap(List.of(mapLine));
+        verify(test).generateMountainLine(treasureMap);
+        verify(test).displayLines(lines);
+        verify(test).writeMap(lines);
     }
 
     @Test
@@ -84,5 +90,24 @@ class MapFileWriterImplTest {
         final var result = test.generateMapLine(treasureMap);
 
         assertEquals("C - 1 - 2", result);
+    }
+
+    @Test
+    void generateMountainLine() {
+        final var cell1 = new MapCell();
+        final var cell2 = new MapCell();
+        cell2.setMountain(true);
+        final var cell3 = new MapCell();
+        cell3.setMountain(true);
+        final var cell4 = new MapCell();
+        final var row1 = List.of(cell1, cell2);
+        final var row2 = List.of(cell3, cell4);
+        final var treasureMap = List.of(row1, row2);
+
+        final var result = test.generateMountainLine(treasureMap);
+
+        assertEquals(2, result.size());
+        assertTrue(result.contains("M - 1 - 0"));
+        assertTrue(result.contains("M - 0 - 1"));
     }
 }
