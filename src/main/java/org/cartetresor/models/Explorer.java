@@ -8,7 +8,7 @@ public class Explorer {
     private int coordX;
     private int coordY;
     private int treasuresCollected = 0;
-    private List<String> actionSequence;
+    private final List<String> actionSequence;
 
     public Explorer(String name, ExplorerDirection direction, int coordX, int coordY, List<String> actionSequence) {
         this.name = name;
@@ -56,9 +56,5 @@ public class Explorer {
 
     public List<String> getActionSequence() {
         return actionSequence;
-    }
-
-    public void setActionSequence(List<String> actionSequence) {
-        this.actionSequence = actionSequence;
     }
 }

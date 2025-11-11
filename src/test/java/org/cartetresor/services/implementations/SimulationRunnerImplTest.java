@@ -32,7 +32,7 @@ class SimulationRunnerImplTest {
 
         test.run(simulationData);
 
-        verify(test, never()).act(any(), any());
+        verify(test, never()).act(any(), any(), any());
     }
 
     @Test
@@ -42,11 +42,11 @@ class SimulationRunnerImplTest {
         final var simulationData = new SimulationData();
         simulationData.getExplorers().add(explorer);
 
-        doNothing().when(test).act(any(), any());
+        doNothing().when(test).act(any(), any(), any());
 
         test.run(simulationData);
 
-        verify(test).act(List.of(), explorer);
+        verify(test).act(List.of(), explorer, List.of(explorer));
     }
 
     @Test
@@ -55,11 +55,11 @@ class SimulationRunnerImplTest {
         final var explorer = new Explorer("explorer", ExplorerDirection.SOUTH, 1, 1, actionSequence);
         final var treasureMap = new ArrayList<List<MapCell>>();
 
-        doNothing().when(test).moveToDirection(any(), any());
+        doNothing().when(test).moveToDirection(any(), any(), any());
 
-        test.act(treasureMap, explorer);
+        test.act(treasureMap, explorer, List.of());
 
-        verify(test).moveToDirection(treasureMap, explorer);
+        verify(test).moveToDirection(treasureMap, explorer, List.of());
     }
 
     @Test
@@ -70,7 +70,7 @@ class SimulationRunnerImplTest {
 
         doNothing().when(test).turn(any(), anyBoolean());
 
-        test.act(treasureMap, explorer);
+        test.act(treasureMap, explorer, List.of());
 
         verify(test).turn(explorer, true);
     }
@@ -83,7 +83,7 @@ class SimulationRunnerImplTest {
 
         doNothing().when(test).turn(any(), anyBoolean());
 
-        test.act(treasureMap, explorer);
+        test.act(treasureMap, explorer, List.of());
 
         verify(test).turn(explorer, false);
     }
@@ -99,11 +99,11 @@ class SimulationRunnerImplTest {
         final var explorer = new Explorer("explorer", direction, 0, 0, List.of());
         final var treasureMap = new ArrayList<List<MapCell>>();
 
-        doNothing().when(test).move(any(), any(), anyInt(), anyInt());
+        doNothing().when(test).move(any(), any(), any(), anyInt(), anyInt());
 
-        test.moveToDirection(treasureMap, explorer);
+        test.moveToDirection(treasureMap, explorer, List.of());
 
-        verify(test).move(treasureMap, explorer, newX, newY);
+        verify(test).move(treasureMap, explorer, List.of(), newX, newY);
     }
 
     @Test
@@ -111,14 +111,14 @@ class SimulationRunnerImplTest {
         final var explorer = new Explorer("explorer", ExplorerDirection.SOUTH, 0, 0, List.of());
         final var treasureMap = new ArrayList<List<MapCell>>();
 
-        doReturn(true).when(test).canMoveTo(any(), anyInt(), anyInt());
+        doReturn(true).when(test).canMoveTo(any(), any(), anyInt(), anyInt());
         doNothing().when(test).collectTreasure(any(), any());
 
-        test.move(treasureMap, explorer, 1, 1);
+        test.move(treasureMap, explorer, List.of(), 1, 1);
 
         assertEquals(1, explorer.getCoordX());
         assertEquals(1, explorer.getCoordY());
-        verify(test).canMoveTo(treasureMap, 1, 1);
+        verify(test).canMoveTo(treasureMap, List.of(), 1, 1);
         verify(test).collectTreasure(treasureMap, explorer);
     }
 
@@ -127,13 +127,13 @@ class SimulationRunnerImplTest {
         final var explorer = new Explorer("explorer", ExplorerDirection.SOUTH, 0, 0, List.of());
         final var treasureMap = new ArrayList<List<MapCell>>();
 
-        doReturn(false).when(test).canMoveTo(any(), anyInt(), anyInt());
+        doReturn(false).when(test).canMoveTo(any(), any(), anyInt(), anyInt());
 
-        test.move(treasureMap, explorer, 1, 1);
+        test.move(treasureMap, explorer, List.of(), 1, 1);
 
         assertEquals(0, explorer.getCoordX());
         assertEquals(0, explorer.getCoordY());
-        verify(test).canMoveTo(treasureMap, 1, 1);
+        verify(test).canMoveTo(treasureMap, List.of(), 1, 1);
         verify(test, never()).collectTreasure(any(), any());
     }
 
@@ -174,7 +174,7 @@ class SimulationRunnerImplTest {
         final var mapCell = new MapCell();
         final var treasureMap = List.of(List.of(mapCell));
 
-        final var result = test.canMoveTo(treasureMap, newX, newY);
+        final var result = test.canMoveTo(treasureMap, List.of(), newX, newY);
 
         assertEquals(expected, result);
     }
@@ -185,9 +185,25 @@ class SimulationRunnerImplTest {
         mapCell.setMountain(true);
         final var treasureMap = List.of(List.of(mapCell));
 
-        final var result = test.canMoveTo(treasureMap, 0, 0);
+        final var result = test.canMoveTo(treasureMap, List.of(), 0, 0);
 
         assertFalse(result);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "0, 0, false",
+            "0, 1, true",
+            "1, 1, true"
+    })
+    void canMoveTo_otherExplorer(int explorerX, int explorerY, boolean expected) {
+        final var mapCell = new MapCell();
+        final var treasureMap = List.of(List.of(mapCell));
+        final var explorer = new Explorer("explorer", ExplorerDirection.SOUTH, explorerX, explorerY, List.of());
+
+        final var result = test.canMoveTo(treasureMap, List.of(explorer), 0, 0);
+
+        assertEquals(expected, result);
     }
 
     @ParameterizedTest
