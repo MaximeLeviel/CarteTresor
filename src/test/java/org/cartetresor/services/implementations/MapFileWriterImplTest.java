@@ -115,8 +115,8 @@ class MapFileWriterImplTest {
         final var result = test.generateMountainLines(treasureMap);
 
         assertEquals(2, result.size());
-        assertEquals("M - 1 - 0", result.get(0));
-        assertEquals("M - 0 - 1", result.get(1));
+        assertEquals("M - 0 - 1", result.get(0));
+        assertEquals("M - 1 - 0", result.get(1));
     }
 
     @Test
@@ -134,8 +134,8 @@ class MapFileWriterImplTest {
         final var result = test.generateTreasureLines(treasureMap);
 
         assertEquals(3, result.size());
-        assertEquals("T - 1 - 0 - 1", result.get(1));
-        assertEquals("T - 0 - 1 - 2", result.get(2));
+        assertEquals("T - 0 - 1 - 1", result.get(1));
+        assertEquals("T - 1 - 0 - 2", result.get(2));
     }
 
     @Test

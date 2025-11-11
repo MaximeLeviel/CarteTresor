@@ -95,7 +95,7 @@ public class MapFileReaderImpl implements MapFileReader {
         if (formattedDirection == null) {
             throw new IllegalArgumentException("Invalid explorer direction: " + direction);
         }
-        final var actionSequence = Arrays.asList(values[5].strip().split(""));
+        final var actionSequence = new ArrayList<>(Arrays.asList(values[5].strip().split("")));
         final var newExplorer = new Explorer(name, formattedDirection, coordX, coordY, actionSequence);
         simulationData.getExplorers().add(newExplorer);
     }

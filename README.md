@@ -9,7 +9,7 @@ Il s’agit d’un exemple simple pour démontrer ma capacité à créer un proj
 
 ## Prérequis
 
-- Java 17 ou supérieur
+- Java 21 ou supérieur
 - Maven 3.8+
 
 ## Installation

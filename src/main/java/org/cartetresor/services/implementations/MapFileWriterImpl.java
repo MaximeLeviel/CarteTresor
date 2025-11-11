@@ -46,9 +46,9 @@ public class MapFileWriterImpl implements MapFileWriter {
 
     List<String> generateMountainLines(List<List<MapCell>> treasureMap) {
         final var mountainLines = new ArrayList<String>();
-        for (int y = 0; y < treasureMap.size(); y++) {
-            for (int x = 0; x < treasureMap.get(y).size(); x++) {
-                final var cell = treasureMap.get(y).get(x);
+        for (int x = 0; x < treasureMap.size(); x++) {
+            for (int y = 0; y < treasureMap.get(x).size(); y++) {
+                final var cell = treasureMap.get(x).get(y);
                 if (cell.isMountain()) {
                     mountainLines.add("M - " + x + " - " + y);
                 }
@@ -59,9 +59,9 @@ public class MapFileWriterImpl implements MapFileWriter {
 
     List<String> generateTreasureLines(List<List<MapCell>> treasureMap) {
         final var treasureLines = new ArrayList<String>();
-        for (int y = 0; y < treasureMap.size(); y++) {
-            for (int x = 0; x < treasureMap.get(y).size(); x++) {
-                final var cell = treasureMap.get(y).get(x);
+        for (int x = 0; x < treasureMap.size(); x++) {
+            for (int y = 0; y < treasureMap.get(x).size(); y++) {
+                final var cell = treasureMap.get(x).get(y);
                 if (cell.getTreasuresCount() > 0) {
                     treasureLines.add("T - " + x + " - " + y + " - " + cell.getTreasuresCount());
                 }
